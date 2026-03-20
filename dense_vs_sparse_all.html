@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLaDA 2.1 · Dense vs Sparse · 128K / 256K / 512K</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+  :root {
+    --bg:#0c0e14;--surface:#13161f;--surface2:#1a1e2a;--border:#252a38;
+    --text:#e2e5ef;--text-dim:#7a8099;--accent:#6366f1;
+    --attn:#ef4444;--moe:#3b82f6;--tp:#f59e0b;--linear:#a855f7;
+    --norm:#22c55e;--sparse-oh:#ec4899;--other:#6b7280;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;padding:40px 20px;}
+  .header{text-align:center;margin-bottom:36px;}
+  .header h1{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-bottom:6px;}
+  .header h1 span{color:var(--accent);}
+  .header .sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.5px;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:0 auto 28px;max-width:900px;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim);}
+  .legend-dot{width:8px;height:8px;border-radius:50%;}
+
+  .grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;max-width:1400px;margin:0 auto 32px;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;}
+  .panel.sp{border-color:rgba(99,102,241,0.3);}
+  .panel-head{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;}
+  .panel-title{font-size:14px;font-weight:600;}
+  .badge{padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;}
+  .badge.bl{background:rgba(107,114,128,0.2);color:#9ca3af;}
+  .badge.green{background:rgba(34,197,94,0.15);color:#4ade80;}
+  .panel-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:12px;}
+  .donut-wrap{display:flex;justify-content:center;position:relative;margin:4px 0;}
+  .donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+  .donut-center .val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;}
+  .donut-center .lbl{font-size:9px;color:var(--text-dim);margin-top:1px;}
+
+  table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);max-width:1400px;margin:0 auto 32px;}
+  th{background:var(--surface2);padding:10px 10px;text-align:right;font-weight:500;font-size:10px;color:var(--text-dim);letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  th:first-child{text-align:left;}
+  td{padding:8px 10px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;border-bottom:1px solid var(--border);}
+  td:first-child{text-align:left;font-family:'Space Grotesk',sans-serif;font-weight:500;display:flex;align-items:center;gap:6px;}
+  td .cd{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  tr:last-child td{border-bottom:none;}
+  tr.tot td{font-weight:700;border-top:2px solid var(--border);font-size:12px;}
+  .pos{color:#4ade80;} .neu{color:var(--text-dim);} .nw{color:var(--sparse-oh);}
+
+  .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;max-width:1400px;margin:0 auto 32px;}
+  .mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+  .mc .lb{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+  .mc .vl{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;}
+  .mc .vl .u{font-size:12px;color:var(--text-dim);font-weight:400;}
+  .mc .s{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:3px;}
+
+  .bars{max-width:1400px;margin:0 auto 32px;}
+  .bars h2{font-size:15px;font-weight:600;margin-bottom:14px;text-align:center;}
+  .bar-row{display:grid;grid-template-columns:90px 1fr 50px;align-items:center;gap:8px;margin-bottom:6px;}
+  .bar-label{font-size:11px;font-weight:500;text-align:right;}
+  .bar-track{height:22px;background:var(--surface);border-radius:4px;overflow:hidden;display:flex;border:1px solid var(--border);}
+  .bar-fill{height:100%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:white;min-width:22px;}
+  .bar-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+
+  .scaling{max-width:1400px;margin:0 auto 32px;}
+  .scaling h2{font-size:15px;font-weight:600;margin-bottom:14px;text-align:center;}
+  .scaling-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+  .sc .ctx{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:8px;}
+  .sc .row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--border);}
+  .sc .row:last-child{border:none;}
+  .sc .row .k{color:var(--text-dim);}
+  .sc .row .v{font-family:'JetBrains Mono',monospace;font-weight:600;}
+
+  .foot{text-align:center;font-size:10px;color:var(--text-dim);margin-top:36px;font-family:'JetBrains Mono',monospace;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>LLaDA 2.1 · Dense vs <span>Sparse</span> Decode Profile</h1>
+  <div class="sub">128K / 256K / 512K context · Per-iteration kernel breakdown · TP=8 · FlashInfer · MoE · bf16 · topk=5%</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--attn)"></div>Attention</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--moe)"></div>MoE</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tp)"></div>TP Comm</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--linear)"></div>Linear</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--norm)"></div>Norm+Act</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sparse-oh)"></div>Sparse OH</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--other)"></div>Other</div>
+</div>
+
+<!-- 6 donuts -->
+<div class="grid6">
+  <div class="panel"><div class="panel-head"><div class="panel-title">128K Dense</div><span class="badge bl">base</span></div><div class="panel-sub">40 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="d128"></g></svg><div class="donut-center"><div class="val">12.9</div><div class="lbl">ms/iter</div></div></div></div>
+  <div class="panel sp"><div class="panel-head"><div class="panel-title">128K Sparse</div><span class="badge green">-23%</span></div><div class="panel-sub">22 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="s128"></g></svg><div class="donut-center"><div class="val">9.9</div><div class="lbl">ms/iter</div></div></div></div>
+  <div class="panel"><div class="panel-head"><div class="panel-title">256K Dense</div><span class="badge bl">base</span></div><div class="panel-sub">23 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="d256"></g></svg><div class="donut-center"><div class="val">14.0</div><div class="lbl">ms/iter</div></div></div></div>
+  <div class="panel sp"><div class="panel-head"><div class="panel-title">256K Sparse</div><span class="badge green">-29%</span></div><div class="panel-sub">25 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="s256"></g></svg><div class="donut-center"><div class="val">9.9</div><div class="lbl">ms/iter</div></div></div></div>
+  <div class="panel"><div class="panel-head"><div class="panel-title">512K Dense</div><span class="badge bl">base</span></div><div class="panel-sub">32 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="d512"></g></svg><div class="donut-center"><div class="val">21.3</div><div class="lbl">ms/iter</div></div></div></div>
+  <div class="panel sp"><div class="panel-head"><div class="panel-title">512K Sparse</div><span class="badge green">-51%</span></div><div class="panel-sub">21 iters</div><div class="donut-wrap"><svg width="150" height="150" viewBox="0 0 150 150"><g transform="translate(75,75)" id="s512"></g></svg><div class="donut-center"><div class="val">10.4</div><div class="lbl">ms/iter</div></div></div></div>
+</div>
+
+<!-- Table -->
+<table>
+  <thead><tr>
+    <th>Category</th>
+    <th>128K D</th><th>%</th><th>128K S</th><th>%</th><th>Δ</th>
+    <th>256K D</th><th>%</th><th>256K S</th><th>%</th><th>Δ</th>
+    <th>512K D</th><th>%</th><th>512K S</th><th>%</th><th>Δ</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><div class="cd" style="background:var(--attn)"></div>Attention</td>
+      <td>4.26</td><td>33%</td><td>1.22</td><td>12%</td><td class="pos">-71%</td>
+      <td>7.08</td><td>51%</td><td>1.58</td><td>16%</td><td class="pos">-78%</td>
+      <td>14.64</td><td>69%</td><td>2.31</td><td>22%</td><td class="pos">-84%</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--moe)"></div>MoE Compute</td>
+      <td>3.60</td><td>28%</td><td>3.60</td><td>36%</td><td class="neu">0%</td>
+      <td>3.32</td><td>24%</td><td>3.60</td><td>36%</td><td class="neu">0%</td>
+      <td>3.52</td><td>17%</td><td>3.79</td><td>36%</td><td class="neu">0%</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--tp)"></div>TP Comm</td>
+      <td>2.40</td><td>19%</td><td>2.20</td><td>22%</td><td class="neu">-8%</td>
+      <td>1.70</td><td>12%</td><td>1.72</td><td>17%</td><td class="neu">+1%</td>
+      <td>1.27</td><td>6%</td><td>0.98</td><td>9%</td><td class="neu">-23%</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--linear)"></div>Linear/GEMM</td>
+      <td>1.31</td><td>10%</td><td>1.00</td><td>10%</td><td class="neu">-24%</td>
+      <td>1.05</td><td>8%</td><td>1.01</td><td>10%</td><td class="neu">-4%</td>
+      <td>1.04</td><td>5%</td><td>1.00</td><td>10%</td><td class="neu">-4%</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--norm)"></div>Norm + Act</td>
+      <td>0.50</td><td>4%</td><td>0.41</td><td>4%</td><td class="neu">-18%</td>
+      <td>0.41</td><td>3%</td><td>0.61</td><td>6%</td><td class="neu">+49%</td>
+      <td>0.41</td><td>2%</td><td>0.61</td><td>6%</td><td class="neu">+49%</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--sparse-oh)"></div>Sparse Overhead</td>
+      <td>—</td><td>—</td><td>0.63</td><td>6%</td><td class="nw">new</td>
+      <td>—</td><td>—</td><td>0.78</td><td>8%</td><td class="nw">new</td>
+      <td>—</td><td>—</td><td>1.13</td><td>11%</td><td class="nw">new</td>
+    </tr>
+    <tr>
+      <td><div class="cd" style="background:var(--other)"></div>Other</td>
+      <td>0.80</td><td>6%</td><td>0.81</td><td>8%</td><td class="neu">+1%</td>
+      <td>0.39</td><td>3%</td><td>0.60</td><td>6%</td><td class="neu">+54%</td>
+      <td>0.38</td><td>2%</td><td>0.56</td><td>5%</td><td class="neu">+47%</td>
+    </tr>
+    <tr class="tot">
+      <td>Total / iter</td>
+      <td>12.87</td><td></td><td>9.87</td><td></td><td class="pos">-23%</td>
+      <td>13.95</td><td></td><td>9.90</td><td></td><td class="pos">-29%</td>
+      <td>21.27</td><td></td><td>10.38</td><td></td><td class="pos">-51%</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Key metrics -->
+<div class="metrics">
+  <div class="mc"><div class="lb">128K Speedup</div><div class="vl" style="color:#4ade80">23<span class="u">%</span></div><div class="s">12.9→9.9 ms</div></div>
+  <div class="mc"><div class="lb">256K Speedup</div><div class="vl" style="color:#4ade80">29<span class="u">%</span></div><div class="s">14.0→9.9 ms</div></div>
+  <div class="mc"><div class="lb">512K Speedup</div><div class="vl" style="color:#4ade80">51<span class="u">%</span></div><div class="s">21.3→10.4 ms</div></div>
+  <div class="mc"><div class="lb">128K Attn ↓</div><div class="vl" style="color:var(--attn)">71<span class="u">%</span></div><div class="s">4.26→1.22</div></div>
+  <div class="mc"><div class="lb">256K Attn ↓</div><div class="vl" style="color:var(--attn)">78<span class="u">%</span></div><div class="s">7.08→1.58</div></div>
+  <div class="mc"><div class="lb">512K Attn ↓</div><div class="vl" style="color:var(--attn)">84<span class="u">%</span></div><div class="s">14.64→2.31</div></div>
+</div>
+
+<!-- Attention bars -->
+<div class="bars">
+  <h2>Paged Attention Kernel (per-iter)</h2>
+  <div class="bar-row"><div class="bar-label">128K Dense</div><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--attn)">4.26ms</div></div><div class="bar-val">100%</div></div>
+  <div class="bar-row"><div class="bar-label">128K Sparse</div><div class="bar-track"><div class="bar-fill" style="width:8.3%;background:var(--attn)">1.22</div></div><div class="bar-val pos">-71%</div></div>
+  <div style="height:8px"></div>
+  <div class="bar-row"><div class="bar-label">256K Dense</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:var(--attn)">7.08ms</div></div><div class="bar-val">100%</div></div>
+  <div class="bar-row"><div class="bar-label">256K Sparse</div><div class="bar-track"><div class="bar-fill" style="width:10.8%;background:var(--attn)">1.58</div></div><div class="bar-val pos">-78%</div></div>
+  <div style="height:8px"></div>
+  <div class="bar-row"><div class="bar-label">512K Dense</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--attn)">14.64ms</div></div><div class="bar-val">100%</div></div>
+  <div class="bar-row"><div class="bar-label">512K Sparse</div><div class="bar-track"><div class="bar-fill" style="width:15.8%;background:var(--attn)">2.31</div></div><div class="bar-val pos">-84%</div></div>
+</div>
+
+<!-- Scaling summary -->
+<div class="scaling">
+  <h2>Scaling Summary</h2>
+  <div class="scaling-grid">
+    <div class="sc">
+      <div class="ctx">128K</div>
+      <div class="row"><span class="k">Dense Attn %</span><span class="v">33%</span></div>
+      <div class="row"><span class="k">Sparse Attn %</span><span class="v">12%</span></div>
+      <div class="row"><span class="k">KV kept</span><span class="v">6.4K / 128K</span></div>
+      <div class="row"><span class="k">Sparse OH</span><span class="v">0.63 ms</span></div>
+      <div class="row"><span class="k">Per-iter Δ</span><span class="v pos">-23%</span></div>
+    </div>
+    <div class="sc">
+      <div class="ctx">256K</div>
+      <div class="row"><span class="k">Dense Attn %</span><span class="v">51%</span></div>
+      <div class="row"><span class="k">Sparse Attn %</span><span class="v">16%</span></div>
+      <div class="row"><span class="k">KV kept</span><span class="v">12.8K / 256K</span></div>
+      <div class="row"><span class="k">Sparse OH</span><span class="v">0.78 ms</span></div>
+      <div class="row"><span class="k">Per-iter Δ</span><span class="v pos">-29%</span></div>
+    </div>
+    <div class="sc">
+      <div class="ctx">512K</div>
+      <div class="row"><span class="k">Dense Attn %</span><span class="v">69%</span></div>
+      <div class="row"><span class="k">Sparse Attn %</span><span class="v">22%</span></div>
+      <div class="row"><span class="k">KV kept</span><span class="v">25.6K / 512K</span></div>
+      <div class="row"><span class="k">Sparse OH</span><span class="v">1.13 ms</span></div>
+      <div class="row"><span class="k">Per-iter Δ</span><span class="v pos">-51%</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  LLaDA 2.1 Flash · 8×H20 TP=8 · FlashInfer · bf16 · JointThreshold decode · torch.profiler<br>
+  Sparse: topk_ratio=5%, group_size=8, per-layer importance (K·K dot product)<br>
+  Dense data from chart (32K/128K/256K/512K) · Sparse from torch.profiler (Block #2, best TP worker)
+</div>
+
+<script>
+// Tooltip element
+const tip=document.createElement('div');
+tip.style.cssText='position:fixed;padding:8px 12px;background:#1a1e2a;border:1px solid #3a3f52;border-radius:8px;font-family:JetBrains Mono,monospace;font-size:11px;color:#e2e5ef;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:999;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.4)';
+document.body.appendChild(tip);
+
+function drawDonut(gid,data,colors,labels){
+  const g=document.getElementById(gid);const total=data.reduce((s,d)=>s+d,0);
+  const r=62,inner=42,gap=0.03;let angle=-Math.PI/2;
+  data.forEach((val,i)=>{
+    const sweep=(val/total)*Math.PI*2-gap;if(sweep<=0)return;
+    const x1=Math.cos(angle)*r,y1=Math.sin(angle)*r,x1i=Math.cos(angle)*inner,y1i=Math.sin(angle)*inner;
+    const ea=angle+sweep,x2=Math.cos(ea)*r,y2=Math.sin(ea)*r,x2i=Math.cos(ea)*inner,y2i=Math.sin(ea)*inner;
+    const lg=sweep>Math.PI?1:0;
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",`M ${x1i} ${y1i} L ${x1} ${y1} A ${r} ${r} 0 ${lg} 1 ${x2} ${y2} L ${x2i} ${y2i} A ${inner} ${inner} 0 ${lg} 0 ${x1i} ${y1i} Z`);
+    p.setAttribute("fill",colors[i]);p.setAttribute("opacity","0.9");
+    p.style.cursor='pointer';p.style.transition='opacity 0.15s';
+    const pct=Math.round(val/total*100);
+    const label=labels[i]||'';
+    p.addEventListener('mouseenter',function(e){
+      this.setAttribute('opacity','1');
+      tip.innerHTML=`<span style="color:${colors[i]}">●</span> ${label}<br><b>${val.toFixed(2)} ms</b> · ${pct}%`;
+      tip.style.opacity='1';
+    });
+    p.addEventListener('mousemove',function(e){
+      tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';
+    });
+    p.addEventListener('mouseleave',function(){
+      this.setAttribute('opacity','0.9');tip.style.opacity='0';
+    });
+    if(pct>=8){const mid=angle+sweep/2,lr=(r+inner)/2+2;
+      const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x",Math.cos(mid)*lr);t.setAttribute("y",Math.sin(mid)*lr+3);
+      t.setAttribute("text-anchor","middle");t.setAttribute("fill","white");
+      t.setAttribute("font-size","9");t.setAttribute("font-weight","600");
+      t.setAttribute("font-family","JetBrains Mono,monospace");
+      t.textContent=pct+"%";t.style.pointerEvents='none';g.appendChild(t);}
+    g.appendChild(p);angle=ea+gap;
+  });
+}
+const cs=d=>getComputedStyle(document.documentElement).getPropertyValue(d).trim();
+const c6=[cs('--attn'),cs('--moe'),cs('--tp'),cs('--linear'),cs('--norm'),cs('--other')];
+const c7=[cs('--attn'),cs('--moe'),cs('--tp'),cs('--linear'),cs('--norm'),cs('--sparse-oh'),cs('--other')];
+
+const denseLabels=['Attention','MoE Compute','TP Comm','Linear/GEMM','Norm+Act','Other'];
+const sparseLabels=['Attention','MoE Compute','TP Comm','Linear/GEMM','Norm+Act','Sparse OH','Other'];
+
+// Dense: Attn, MoE, TP, Linear, Norm, Other
+drawDonut('d128',[4.26,3.60,2.40,1.31,0.50,0.80],c6,denseLabels);
+drawDonut('d256',[7.08,3.32,1.70,1.05,0.41,0.39],c6,denseLabels);
+drawDonut('d512',[14.64,3.52,1.27,1.04,0.41,0.38],c6,denseLabels);
+// Sparse: Attn, MoE, TP, Linear, Norm, SparseOH, Other
+drawDonut('s128',[1.22,3.60,2.20,1.00,0.41,0.63,0.81],c7,sparseLabels);
+drawDonut('s256',[1.58,3.60,1.72,1.01,0.61,0.78,0.60],c7,sparseLabels);
+drawDonut('s512',[2.31,3.79,0.98,1.00,0.61,1.13,0.56],c7,sparseLabels);
+</script>
+</body>
+</html>
