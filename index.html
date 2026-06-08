@@ -1,3 +1,4 @@
+```html id="s1pl47"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,116 +6,390 @@
   <title>Qian Xu</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
+      color: #222;
+      background-color: #fff;
     }
+
     .sidebar {
-      width: 280px;
+      width: 285px;
       background-color: #f9f9f9;
-      padding: 30px 20px;
-      border-right: 1px solid #ccc;
-      height: 100vh;
+      padding: 30px 22px;
+      border-right: 1px solid #ddd;
+      min-height: 100vh;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
     }
+
     .main {
       flex: 1;
-      padding: 40px;
+      padding: 40px 55px;
+      max-width: 980px;
+      box-sizing: border-box;
     }
+
     .sidebar img {
       width: 100%;
       border-radius: 10px;
       margin-bottom: 20px;
     }
+
     .sidebar h1 {
       margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 28px;
     }
-    .sidebar p, .sidebar a {
+
+    .sidebar p,
+    .sidebar a {
       font-size: 14px;
       color: #333;
       line-height: 1.6;
     }
+
     .sidebar a {
       color: #0366d6;
       text-decoration: none;
     }
+
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+
     .main h2 {
-      margin-top: 40px;
-      font-size: 20px;
+      margin-top: 38px;
+      font-size: 21px;
       border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
+      padding-bottom: 6px;
+    }
+
+    .main h2:first-child {
+      margin-top: 0;
+    }
+
+    p {
+      line-height: 1.65;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 12px;
+      line-height: 1.55;
+    }
+
+    .paper {
+      margin-bottom: 22px;
+    }
+
+    .paper-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .paper-authors {
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .paper-venue {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .links {
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .links a {
+      margin-right: 8px;
+      color: #0366d6;
+      text-decoration: none;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    .project {
+      margin-bottom: 24px;
+    }
+
+    .project-title {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .project-desc {
+      margin-top: 6px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    @media (max-width: 800px) {
+      body {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .sidebar img {
+        max-width: 220px;
+      }
+
+      .main {
+        padding: 30px 24px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <img src="https://raw.githubusercontent.com/xuqianmamba/Profile/main/%E7%AE%80%E5%8E%86%E7%85%A7%E7%89%87.jpg" alt="Qian Xu">
+
     <h1>Qian Xu</h1>
+
     <p>🎓 Ph.D. Student, School of Information, Renmin University of China</p>
-    <p>💻 Vector Database / System Optimization / Graph Processing</p>
+    <p>💻 AI Infrastructure / Diffusion LLM Inference / Vector Database / Graph Systems</p>
     <p>📍 Beijing, China</p>
     <p>📬 <a href="mailto:xuqianmamba@gmail.com">xuqianmamba@gmail.com</a></p>
     <p>🔗 <a href="https://github.com/xuqianmamba">GitHub</a></p>
+    <p>🔗 <a href="#">Google Scholar</a></p>
   </div>
 
   <div class="main">
     <h2>🧠 About Me</h2>
-    <p>I am currently a Ph.D. student in the School of Information, Renmin University of China. My research focuses on graph systems, vector databases, and compression techniques, aiming to boost query performance and system throughput in resource-constrained environments through system-level optimization and efficient indexing.</p>
+    <p>
+      Hi there! I am currently a Ph.D. student in the School of Information at Renmin University of China.
+      My research interests lie in high-performance data and AI systems, with a particular focus on
+      vector databases, graph systems, GPU query processing, and efficient inference for diffusion language models.
+      I am broadly interested in building practical systems that improve throughput, memory efficiency,
+      and cost efficiency under real-world resource constraints.
+    </p>
 
     <h2>🎓 Education</h2>
     <ul>
-      <li><strong>Renmin University of China</strong>, Ph.D. in Computer Science </li>
-      <li><strong>Renmin University of China</strong>, B.Sc. in Computer Science </li>
-    </ul>
-
-    <h2>💼 Experience</h2>
-    <ul>
-      <li><strong>Beijing HaiZhi XingTu Technology Co., Ltd</strong>, Graph System Research Intern (2022.11 – 2025.2)</li>
-      <li><strong>SenseTime</strong>, OCR Research Intern (2020.12 – 2021.6)</li>
-    </ul>
-
-    <h2>📄 First-Author Publications</h2>
-    <ul>
-      <li><strong>VLDB 2024</strong><br>
-        Improving Graph Compression for Efficient Resource-Constrained Graph Analytics<br>
-        In real-world large-scale graph processing, systems often crash or slow down due to memory overload. This work introduces a new system called <strong>Laconic</strong>, which significantly reduces memory usage while preserving query speed. It solves a real system bottleneck—handling massive graphs with limited hardware—and has already been integrated into a company’s production platform.
-        [<a href="https://dl.acm.org/doi/abs/10.14778/3665844.3665852">paper</a>] [<a href="https://github.com/xuqianmamba/Laconic">project page</a>]
+      <li>
+        <strong>Renmin University of China</strong>, 2023.09 – Present<br>
+        Ph.D. student in Computer Science
       </li>
-      <li><strong>SIGMOD 2025</strong><br>
-        Tribase: A Vector Data Query Engine for Reliable and Lossless Pruning Compression using Triangle Inequalities<br>
-        This paper focuses on speeding up search in vector databases. The system, <strong>Tribase</strong>, cuts down unnecessary computations by smartly identifying and skipping low-value data. On real-world datasets, it reduces up to 99.6% of the total computation while preserving exact accuracy, making vector search both faster and more reliable, especially under compute constraints.
-        [<a href="https://dl.acm.org/doi/10.1145/3709743">paper</a>] [<a href="https://github.com/xuqianmamba/Tribase">project page</a>]
-      </li>
-      <li><strong>SIGMOD 2026</strong> (accepted, upcoming)<br>
-        HARMONY: A Scalable Distributed Vector Database for High-Throughput Approximate Nearest Neighbor Search<br>
-        As data scales up, running vector search across many machines becomes critical. This work, <strong>Harmony</strong>, designs a distributed system that balances the workload across nodes more effectively. By reducing duplication and ensuring each machine handles a fair share of the work, it improves cost efficiency and throughput under real-world workload imbalances.
-        [<a href="https://dl.acm.org/doi/abs/10.1145/3749167">paper</a>] [<a href="https://github.com/xuqianmamba/Harmony">project page</a>]
+      <li>
+        <strong>Renmin University of China</strong>, 2019.09 – 2023.06<br>
+        B.Sc. in Computer Science
       </li>
     </ul>
 
-    <h2>🛠️ Skill Set</h2>
+    <h2>💼 Work Experience</h2>
     <ul>
-      <li>Languages: Python, C++</li>
-      <li>Platform: Linux</li>
-      <li>Focus: System and data processing optimization, graph/vector query engine development</li>
+      <li>
+        <strong>Ant Group</strong>, Research Intern, 2025.02 – Present<br>
+        Diffusion LLM AI Infra Department
+      </li>
+      <li>
+        <strong>Beijing HaiZhi XingTu Technology Co., Ltd</strong>, Research Intern, 2022.11 – 2025.01<br>
+        Graph Computing Department
+      </li>
+      <li>
+        <strong>SenseTime</strong>, OCR Research Intern, 2021.11 – 2022.06
+      </li>
     </ul>
+
+    <h2>📄 Selected Publications</h2>
+
+    <div class="paper">
+      <div class="paper-title">
+        dInfer: An Efficient Inference Framework for Diffusion Language Models
+      </div>
+      <div class="paper-authors">
+        Qian Xu, et al.
+      </div>
+      <div class="paper-venue">
+        Technical Report, 2026
+      </div>
+      <div class="links">
+        [<a href="https://github.com/inclusionAI/dInfer">Project Page</a>]
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        HARMONY: A Scalable Distributed Vector Database for High-Throughput Approximate Nearest Neighbor Search
+      </div>
+      <div class="paper-authors">
+        <strong>Qian Xu</strong>, Feng Zhang, Chengxi Li, Lei Cao, Zheng Chen, Jidong Zhai, Xiaoyong Du
+      </div>
+      <div class="paper-venue">
+        SIGMOD 2026
+      </div>
+      <div class="links">
+        [<a href="https://dl.acm.org/doi/abs/10.1145/3749167">Paper</a>]
+        [<a href="https://github.com/xuqianmamba/Harmony">Project Page</a>]
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        Tribase: A Vector Data Query Engine for Reliable and Lossless Pruning Compression using Triangle Inequalities
+      </div>
+      <div class="paper-authors">
+        <strong>Qian Xu</strong>, et al.
+      </div>
+      <div class="paper-venue">
+        SIGMOD 2025
+      </div>
+      <div class="links">
+        [<a href="https://dl.acm.org/doi/10.1145/3709743">Paper</a>]
+        [<a href="https://github.com/xuqianmamba/Tribase">Project Page</a>]
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        Improving Graph Compression for Efficient Resource-Constrained Graph Analytics
+      </div>
+      <div class="paper-authors">
+        <strong>Qian Xu</strong>, et al.
+      </div>
+      <div class="paper-venue">
+        VLDB 2024
+      </div>
+      <div class="links">
+        [<a href="https://dl.acm.org/doi/abs/10.14778/3665844.3665852">Paper</a>]
+        [<a href="https://github.com/xuqianmamba/Laconic">Project Page</a>]
+      </div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-title">
+        TensorSlim: Improving GPU Tensor Query Processing for Resource-Constrained Environments
+      </div>
+      <div class="paper-authors">
+        <strong>Qian Xu</strong>, et al.
+      </div>
+      <div class="paper-venue">
+        ICDE 2026
+      </div>
+      <div class="links">
+        [<a href="https://icde2026.github.io/accepted-papers.html">Paper</a>]
+      </div>
+    </div>
+
+    <h2>🛠️ Projects</h2>
+
+    <div class="project">
+      <div class="project-title">
+        dInfer: Efficient Inference Framework for Diffusion Language Models
+      </div>
+      <div class="links">
+        [<a href="https://github.com/inclusionAI/dInfer">GitHub</a>]
+      </div>
+      <p class="project-desc">
+        dInfer is a high-performance open-source inference framework for diffusion language models.
+        It decouples the dLLM inference pipeline into model execution, diffusion iteration management,
+        decoding strategy, and KV-cache management. On 8×H800 GPUs with batch size 1, dInfer achieves
+        over 1,100 tokens/s on HumanEval, delivering around 10× speedup over Fast-dLLM without degrading
+        generation quality.
+      </p>
+      <ul>
+        <li>
+          <span class="highlight">Vicinity Refresh.</span>
+          Designed a sliding-window KV-cache refresh mechanism for bidirectional diffusion language models.
+          Instead of naively recomputing or fully reusing all KV states, the method selectively refreshes
+          tokens near the current decoding block while reusing stable remote cache states, improving inference
+          efficiency while preserving model quality.
+        </li>
+        <li>
+          <span class="highlight">Per-Layer Sparse Attention.</span>
+          Developed a layer-wise sparse attention optimization for long-context block diffusion serving in SGLang.
+          Each Transformer layer independently selects important prefix KV groups, and the implementation overlaps
+          importance computation with the current forward pass using asynchronous CUDA streams and CUDA Graph-friendly
+          runtime management.
+        </li>
+      </ul>
+    </div>
+
+    <div class="project">
+      <div class="project-title">
+        Harmony: Distributed Vector Database for High-Throughput ANN Search
+      </div>
+      <div class="links">
+        [<a href="https://github.com/xuqianmamba/Harmony">GitHub</a>]
+      </div>
+      <p class="project-desc">
+        Harmony is a scalable distributed vector database designed for high-throughput approximate nearest neighbor search.
+        It focuses on reducing data redundancy and balancing workload across nodes, enabling efficient multi-node vector
+        search under real-world workload imbalance.
+      </p>
+    </div>
+
+    <div class="project">
+      <div class="project-title">
+        Tribase: Lossless Pruning for Vector Search
+      </div>
+      <div class="links">
+        [<a href="https://github.com/xuqianmamba/Tribase">GitHub</a>]
+      </div>
+      <p class="project-desc">
+        Tribase is a vector query engine that uses triangle inequalities to safely prune unnecessary distance computations.
+        It accelerates exact vector search while providing lossless guarantees, avoiding the accuracy risks of approximate
+        pruning methods.
+      </p>
+    </div>
+
+    <div class="project">
+      <div class="project-title">
+        Laconic: Graph Compression for Resource-Constrained Graph Analytics
+      </div>
+      <div class="links">
+        [<a href="https://github.com/xuqianmamba/Laconic">GitHub</a>]
+      </div>
+      <p class="project-desc">
+        Laconic is a graph compression system for large-scale graph analytics under limited memory resources.
+        It reduces memory consumption while preserving query performance, enabling efficient processing of large real-world graphs.
+      </p>
+    </div>
 
     <h2>🏆 Honors & Awards</h2>
     <ul>
-      <li>National Graduate Scholarship (2024)</li>
-      <li>National Graduate Scholarship (2025)</li>
+      <li>CCF Young Talent Development Program, Ph.D. Student, 2025</li>
+      <li>National Graduate Scholarship, 2025</li>
+      <li>National Graduate Scholarship, 2024</li>
     </ul>
 
-    <h2>📘️ Patents</h2>
+    <h2>📘 Patents</h2>
     <ul>
-      <li><strong>CN119759967A</strong>: ANN compression optimization for high-dimensional vectors (2nd inventor)</li>
-      <li><strong>CN120086218A</strong>: Sub-neighbor network vector indexing (2nd inventor)</li>
-      <li><strong>CN119169111A</strong>: Large-scale graph compression processing (2nd inventor)</li>
+      <li><strong>CN119759967A</strong>: ANN compression optimization for high-dimensional vectors, 2nd inventor</li>
+      <li><strong>CN120086218A</strong>: Sub-neighbor network vector indexing, 2nd inventor</li>
+      <li><strong>CN119169111A</strong>: Large-scale graph compression processing, 2nd inventor</li>
     </ul>
 
     <h2>🌍 Misc</h2>
-    <p>Languages: English (CET-6)</p>
-    <p style="font-size: 12px; color: gray;">Last updated: June 2025</p>
+    <p>Languages: English, CET-6</p>
+    <p class="note">Last updated: June 2026</p>
   </div>
 </body>
 </html>
+```
