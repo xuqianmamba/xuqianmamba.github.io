@@ -17,6 +17,8 @@
 ```
 .sidebar {
   width: 285px;
+  flex: 0 0 285px;
+  max-width: 285px;
   background-color: #f9f9f9;
   padding: 30px 22px;
   border-right: 1px solid #ddd;
@@ -25,6 +27,7 @@
   position: sticky;
   top: 0;
   align-self: flex-start;
+  overflow: hidden;
 }
 
 .main {
@@ -34,10 +37,13 @@
   box-sizing: border-box;
 }
 
-.sidebar img {
-  width: 100%;
+.profile-photo {
+  width: 210px;
+  max-width: 100%;
+  height: auto;
+  display: block;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
 }
 
 .sidebar h1 {
@@ -161,14 +167,16 @@ li {
 
   .sidebar {
     width: 100%;
+    max-width: none;
+    flex: none;
     min-height: auto;
     position: relative;
     border-right: none;
     border-bottom: 1px solid #ddd;
   }
 
-  .sidebar img {
-    max-width: 220px;
+  .profile-photo {
+    width: 190px;
   }
 
   .main {
@@ -182,7 +190,7 @@ li {
 
 <body>
   <div class="sidebar">
-    <img src="./简历照片.jpg" alt="Qian Xu">
+    <img class="profile-photo" src="./简历照片.jpg" alt="Qian Xu">
 
 ```
 <h1>Qian Xu</h1>
@@ -261,7 +269,7 @@ li {
     <strong>Qian Xu</strong>, Feng Zhang, Chengxi Li, Lei Cao, Zheng Chen, Jidong Zhai, Xiaoyong Du
   </div>
   <div class="paper-venue">
-    SIGMOD 2026
+    SIGMOD 2026 <span class="tag">First Author</span>
   </div>
   <div class="links">
     [<a href="https://dl.acm.org/doi/abs/10.1145/3749167">Paper</a>]
@@ -277,7 +285,7 @@ li {
     <strong>Qian Xu</strong>, et al.
   </div>
   <div class="paper-venue">
-    SIGMOD 2025
+    SIGMOD 2025 <span class="tag">First Author</span>
   </div>
   <div class="links">
     [<a href="https://dl.acm.org/doi/10.1145/3709743">Paper</a>]
@@ -293,7 +301,7 @@ li {
     <strong>Qian Xu</strong>, et al.
   </div>
   <div class="paper-venue">
-    VLDB 2024
+    VLDB 2024 <span class="tag">First Author</span>
   </div>
   <div class="links">
     [<a href="https://dl.acm.org/doi/abs/10.14778/3665844.3665852">Paper</a>]
@@ -309,7 +317,7 @@ li {
     <strong>Qian Xu</strong>, et al.
   </div>
   <div class="paper-venue">
-    ICDE 2026
+    ICDE 2026 <span class="tag">First Author</span>
   </div>
   <div class="links">
     [<a href="https://icde2026.github.io/accepted-papers.html">Paper</a>]
