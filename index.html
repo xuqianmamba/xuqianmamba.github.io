@@ -467,6 +467,14 @@ a:hover {
             <a href="mailto:xuqianmamba@gmail.com">xuqianmamba@gmail.com</a>
           </p>
           <p>
+            <span class="profile-icon" aria-hidden="true">💻</span>
+            <a href="https://github.com/xuqianmamba" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </p>
+          <p>
+            <span class="profile-icon" aria-hidden="true">🎓</span>
+            <a href="https://scholar.google.com/citations?user=6B0o0_gAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+          </p>
+          <p>
             <span class="profile-icon" aria-hidden="true">🔗</span>
             <a href="https://github.com/xuqianmamba" target="_blank" rel="noopener noreferrer">GitHub</a>
           </p>
@@ -495,6 +503,26 @@ a:hover {
           <p class="intro lang-zh" lang="zh-CN">
             大家好！我目前是中国人民大学信息学院博士研究生，导师为<a href="https://fengzhangcs.github.io/" target="_blank" rel="noopener noreferrer">张峰教授</a>和杜小勇教授。我的研究方向是 AI Infra 和向量数据库。我对构建能够在实际资源约束下提升吞吐量和成本效率的实用系统有广泛兴趣。
           </p>
+        </section>
+
+        <section aria-labelledby="news-title">
+          <h2 id="news-title">
+            <span aria-hidden="true">📢</span>
+            <span class="lang-en" lang="en">News</span>
+            <span class="lang-zh" lang="zh-CN">近期动态</span>
+          </h2>
+          <ul class="lang-en" lang="en">
+            <li><strong>Nov. 2026:</strong> Our native-H16 CuTe sparse-prefill backend for DeepSeek-V4 was merged into <a href="https://github.com/sgl-project/sglang/pull/36059" target="_blank" rel="noopener noreferrer">SGLang</a>.</li>
+            <li><strong>Nov. 2026:</strong> Opened SGLang contributions to reduce SM90 MXFP4 preprocessing memory (<a href="https://github.com/sgl-project/sglang/pull/48091" target="_blank" rel="noopener noreferrer">#48091</a>) and fix FP8 exclusions for Qwen4-Exp PLE tables (<a href="https://github.com/sgl-project/sglang/pull/48073" target="_blank" rel="noopener noreferrer">#48073</a>).</li>
+            <li><strong>Jul. 2026:</strong> Joined Alibaba Taotian Group as an AI Infra Engineer through the T-Star Lab Talent Program.</li>
+            <li><strong>2026:</strong> HARMONY was accepted at SIGMOD 2026, and TensorSlim was accepted at ICDE 2026.</li>
+          </ul>
+          <ul class="lang-zh" lang="zh-CN">
+            <li><strong>2026 年 11 月：</strong>面向 DeepSeek-V4 的原生 H16 CuTe 稀疏预填充后端已合并至 <a href="https://github.com/sgl-project/sglang/pull/36059" target="_blank" rel="noopener noreferrer">SGLang</a>。</li>
+            <li><strong>2026 年 11 月：</strong>向 SGLang 提交了降低 SM90 MXFP4 预处理内存峰值（<a href="https://github.com/sgl-project/sglang/pull/48091" target="_blank" rel="noopener noreferrer">#48091</a>）以及修复 Qwen4-Exp PLE 表 FP8 排除逻辑（<a href="https://github.com/sgl-project/sglang/pull/48073" target="_blank" rel="noopener noreferrer">#48073</a>）的贡献。</li>
+            <li><strong>2026 年 7 月：</strong>通过 T-Star Lab 人才计划加入阿里巴巴淘天集团，担任 AI Infra 工程师。</li>
+            <li><strong>2026 年：</strong>HARMONY 被 SIGMOD 2026 接收，TensorSlim 被 ICDE 2026 接收。</li>
+          </ul>
         </section>
 
         <section aria-labelledby="education-title">
@@ -635,15 +663,15 @@ a:hover {
             <div class="project-title">dInfer: Efficient Inference Framework for Diffusion Language Models</div>
             <div class="paper-links">[<a href="https://github.com/inclusionAI/dInfer" target="_blank" rel="noopener noreferrer">GitHub</a>]</div>
             <div class="lang-en" lang="en">
-              <p class="project-desc">dInfer is a high-performance open-source inference framework for diffusion language models. It modularizes the dLLM inference pipeline into model execution, diffusion iteration management, decoding strategy, and KV-cache management. I contributed to system-level optimizations for efficient dLLM serving, especially KV-cache reuse for bidirectional diffusion language models.</p>
+              <p class="project-desc">dInfer is an open-source inference framework for diffusion language models. As a core contributor, I work on serving efficiency and KV-cache reuse.</p>
               <ul>
-                <li><strong>Vicinity Refresh.</strong> Designed a sliding-window KV-cache refresh mechanism for bidirectional diffusion language models. Instead of naively recomputing or fully reusing all KV states, this method selectively refreshes tokens near the current decoding block while reusing stable remote cache states, improving inference efficiency while preserving generation quality.</li>
+                <li><strong>Vicinity Refresh.</strong> Designed a sliding-window policy that recomputes KV states near the active decoding block and reuses stable remote states, reducing redundant computation while preserving generation quality.</li>
               </ul>
             </div>
             <div class="lang-zh" lang="zh-CN">
-              <p class="project-desc">dInfer 是一个面向扩散语言模型的高性能开源推理框架。它将 dLLM 推理流程模块化为模型执行、扩散迭代管理、解码策略和 KV 缓存管理。我参与了 dLLM 高效服务的系统级优化，尤其是双向扩散语言模型的 KV 缓存复用。</p>
+              <p class="project-desc">dInfer 是一个面向扩散语言模型的开源推理框架。作为核心贡献者，我主要参与推理服务效率和 KV 缓存复用优化。</p>
               <ul>
-                <li><strong>Vicinity Refresh。</strong>面向双向扩散语言模型设计了滑动窗口 KV 缓存刷新机制。该方法不采用简单的全量重计算或完整复用所有 KV 状态，而是选择性刷新当前解码块附近的 token，同时复用远端稳定的缓存状态，在保持生成质量的同时提升推理效率。</li>
+                <li><strong>Vicinity Refresh。</strong>设计滑动窗口刷新策略，重新计算当前解码块附近的 KV 状态并复用远端稳定状态，在保持生成质量的同时减少冗余计算。</li>
               </ul>
             </div>
           </article>
